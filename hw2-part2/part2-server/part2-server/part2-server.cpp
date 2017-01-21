@@ -117,6 +117,7 @@ void handleClient(SOCKET ClientSocket) {
 			printf("Failed reading update firmware\n");
 			return;
 		}
+		_tprintf(TEXT("%s"), update_buffer);
 
 		//check checksum
 		if (givenCRC != crc32(0, (char*)update_buffer, buffer_size)) {
