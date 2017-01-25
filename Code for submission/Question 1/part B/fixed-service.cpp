@@ -1,13 +1,7 @@
 #include "stdafx.h"
-#include "resource.h"
-
-#include "stdafx.h"
-#include "resource.h"
 
 #pragma comment(lib, "advapi32.lib")
 #include <aclapi.h>
-
-
 
 #include <windows.h>
 #include <tchar.h> 
@@ -237,7 +231,7 @@ LPTSTR createTempFile() {
 		GENERIC_WRITE,        // open for write 
 		FILE_SHARE_WRITE,                    // do not share 
 		NULL,                 // default security 
-		OPEN_EXISTING,        // overwrite existing
+		CREATE_ALWAYS,        // overwrite existing
 		FILE_ATTRIBUTE_NORMAL,// normal file 
 		NULL);                // no template 
 	if (hTempFile == INVALID_HANDLE_VALUE) {
@@ -248,16 +242,15 @@ LPTSTR createTempFile() {
 		}
 		return NULL;
 	}
-
-	/*
-	bool success = CopyFile(TEXT(EXSISTING_FILE_NAME), szTempFileName, FALSE);
-	if (!success) {
-		PrintError(TEXT("CopyFile failed"));
-		return NULL;
-	}*/
-
+	
 
 	CloseHandle(hTempFile);
+	bool success = CopyFile(TEXT(EXSISTING_FILE_NAME), szTempFileName, FALSE);
+	if (!success) {
+	PrintError(TEXT("CopyFile failed"));
+	return NULL;
+	}
+
 	_tprintf(TEXT("%s"), szTempFileName);
 	return (LPTSTR)szTempFileName;
 }
@@ -271,7 +264,7 @@ int SvcInit() {
 	LPTSTR szTempFileName;
 
 	szTempFileName = createTempFile();
-	
+
 	ZeroMemory(&si, sizeof(si));
 	si.cb = sizeof(si);
 	ZeroMemory(&pi, sizeof(pi));
@@ -284,6 +277,7 @@ int SvcInit() {
 		0, NULL, NULL, &si, &pi);
 	if (!fSuccess) {
 		PrintError(TEXT("CreateProcess failed"));
+		Sleep(2000);
 		return 5;
 	}
 
@@ -303,7 +297,6 @@ void main(void) {
 	SvcInit();
 	return;
 }
-
 
 
 
